@@ -48,54 +48,36 @@ var TweetsList = Backbone.View.extend({
   },
 });
 
+// creating the event handler
+var vent = _.extend({}, Backbone.Events);
 
 var AppRouter = Backbone.Router.extend({
-    searchModel : null,
-    initialize:  function(options){
-        var self = this;
-        self.tweetList = options.tweetList;
-        self.listenTo(self.tweetList, 'change:query', self.navigateToSearch)
+    routes: {
+      'search/:query' : 'search',
+      '': 'index'
     },
-    navigateToSearch: function(model, options){
-        //manually navigate to the search url
-        this.navigate("search/" + model.get('query'), {trigger: true});
+    search: function(query) {
+      console.log("search:" + query);
+      vent.trigger("search:query", query);
     },
-    routes: {'search/:query' : 'search'},
-    search: function(query){
-        var self = this;
-        console.log('search for ' + query);
-        if(self.searchModel.get('query') !== query){
-            self.searchModel.set('query', query, {silent:true});
-        }
-    //now go the that view
-        self.searchModel.fetch(
-            {
-                success: function(model){
-                var resultsView = new com.apress.view.ResultsView({model:model});
-                },
-                error: function(e){
-                  alert('No results available');
-                }
-            });
-      }
-    });
+    index: function()  {
+      console.log("index");
+    }
+  });
 
-
-
+vent.on("search:query", function(query) {
+  console.log("Here you go :"+query);
+});
 
 $(function(){
-  
+
+/*  
   $('#searchButton').click(function() {
     var tweetCollection = new TweetsCollection([], {query: $('#searchBox').val()});
     window.tweets = new TweetsList({collection: tweetCollection});
     tweetCollection.fetch();
   });
-
-/*
-  window.tweetRouter = new TweetRouter ({
-    main: $('.tweets')
-  });
-  Backbone.history.start({pushState: true});
 */
-
+  window.tweetRouter = new AppRouter();
+  Backbone.history.start();
 });
