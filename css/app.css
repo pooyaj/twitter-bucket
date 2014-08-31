@@ -6,15 +6,16 @@ body, html { font-size: 100%; padding: 0; margin: 0;}
 .clearfix:after { clear: both; }
 
 body {
-    font-family: 'Lato', Calibri, Arial, sans-serif;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+   	font-weight: 300;
     color: #47a3da;
 }
 a {
-	color: #f0f0f0;
+	color: #3498db;
 	text-decoration: none;
 }
 a:hover {
-	color: #000;
+	color: #f39c12;
 }
 
 .tweet_container {
@@ -79,18 +80,18 @@ a:hover {
 /* Right content */
 .tweet_timeline > li .tweet_body {
 	margin: 0 0 15px 25%;
-	background: #3594cb;
+	background: #34495e;
 	color: #fff;
-	padding: 2em;
+	padding: 1em;
 	font-size: 1.2em;
-	font-weight: 300;
+	font-weight: 100;
 	line-height: 1.4;
 	position: relative;
 	border-radius: 5px;
 }
 
 .tweet_timeline > li:nth-child(odd) .tweet_body {
-	background: #6cbfee;
+	background: #2c3e50;
 }
 
 .tweet_timeline > li .tweet_body h2 { 
@@ -108,13 +109,13 @@ a:hover {
 	width: 0;
 	position: absolute;
 	pointer-events: none;
-	border-right-color: #3594cb;
+	border-right-color: #34495e;
 	border-width: 10px;
 	top: 20px;
 }
 
 .tweet_timeline > li:nth-child(odd) .tweet_body:after {
-	border-right-color: #6cbfee;
+	border-right-color: #2c3e50;
 }
 
 /* The icons */
@@ -160,7 +161,7 @@ a:hover {
 	.tweet_timeline > li .tweet_body {
 		margin: 0 0 30px 0;
 		padding: 1em;
-		font-weight: 400;
+		font-weight: 100;
 		font-size: 95%;
 	}
 
