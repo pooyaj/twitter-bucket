@@ -9,14 +9,15 @@ var TweetsCollection = Backbone.Collection.extend({
     this.query = options.query;
   },
   url: function () {
-    return "/tweetproxy/proxy.php?q="+ this.query;
+    return "/tweetproxy/proxy.php?q="+ this.query+"&count=50";
   },
   parse: function(response) {
     return response.statuses;
-  }, 
+  },
   update: function() {
+    console.log("updating...");
     this.fetch({
-      add: true;
+      add: true
     });
   }
 });
@@ -25,10 +26,6 @@ var TweetsCollection = Backbone.Collection.extend({
 var tweetTemplate = _.template('<time class="tweet_time"><span><%= model.get("created_at").slice(0,10) %></span> <span><%= model.get("created_at").slice(10,16) %></span></time>'+
 '<div class="tweet_user" style="background-image: url(\'<%= model.get("user").profile_background_image_url %>\')"></div>'+
 '<div class="tweet_body"><p><%= fixURL(model.get("text")) %></p></div>');
-
-
-
-
 
 var TweetView = Backbone.View.extend({
   tagName: 'li',
@@ -59,15 +56,17 @@ var TweetsList = Backbone.View.extend({
   },
   renderTweet: function(model){
     model.view = new TweetView({ model: model });
-    this.$('#tweet-list').append( model.view.render() );
+    this.$('#tweet-list').prepend(model.view.render()).hide().fadeIn('slow');
   },
   reset: function() {
     this.$('#tweet-list').empty();
   },
   updateSearch: function(query) {
     this.collection.query = query;
+    clearInterval(this.interval);
     this.collection.reset();
     this.collection.fetch();
+    this.interval = setInterval(_.bind(this.collection.update, this.collection), 30000);
   },
   events: {
     'click #searchButton': 'doSearch'
