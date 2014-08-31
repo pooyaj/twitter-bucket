@@ -1,0 +1,187 @@
+*, *:after, *:before { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+body, html { font-size: 100%; padding: 0; margin: 0;}
+
+/* Clearfix hack by Nicolas Gallagher: http://nicolasgallagher.com/micro-clearfix-hack/ */
+.clearfix:before, .clearfix:after { content: " "; display: table; }
+.clearfix:after { clear: both; }
+
+body {
+    font-family: 'Lato', Calibri, Arial, sans-serif;
+    color: #47a3da;
+}
+a {
+	color: #f0f0f0;
+	text-decoration: none;
+}
+a:hover {
+	color: #000;
+}
+
+.tweet_container {
+	width: 95%;
+	max-width: 69em;
+	margin: 0 auto;
+	padding: 0 1.875em 3.125em;
+}
+
+
+.tweet_timeline {
+	margin: 30px 0 0 0;
+	padding: 0;
+	list-style: none;
+	position: relative;
+} 
+
+/* The line */
+.tweet_timeline:before {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 10px;
+	background: #afdcf8;
+	left: 20%;
+	margin-left: -15px;
+}
+
+.tweet_timeline > li {
+	position: relative;
+}
+
+/* The date/time */
+/* 25% width and padded to the left */
+.tweet_timeline > li .tweet_time {
+	display: block;
+	width: 25%;
+	padding-right: 100px;
+	position: absolute;
+}
+
+.tweet_timeline > li .tweet_time span {
+	display: block;
+	text-align: right;
+}
+
+.tweet_timeline > li .tweet_time span:first-child {
+	font-size: 0.9em;
+	color: #bdd0db;
+}
+
+.tweet_timeline > li .tweet_time span:last-child {
+	font-size: 2.9em;
+	color: #3594cb;
+}
+
+.tweet_timeline > li:nth-child(odd) .tweet_time span:last-child {
+	color: #6cbfee;
+}
+
+/* Right content */
+.tweet_timeline > li .tweet_body {
+	margin: 0 0 15px 25%;
+	background: #3594cb;
+	color: #fff;
+	padding: 2em;
+	font-size: 1.2em;
+	font-weight: 300;
+	line-height: 1.4;
+	position: relative;
+	border-radius: 5px;
+}
+
+.tweet_timeline > li:nth-child(odd) .tweet_body {
+	background: #6cbfee;
+}
+
+.tweet_timeline > li .tweet_body h2 { 
+	margin-top: 0px;
+	padding: 0 0 10px 0;
+	border-bottom: 1px solid rgba(255,255,255,0.4);
+}
+
+/* The triangle */
+.tweet_timeline > li .tweet_body:after {
+	right: 100%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+	border-right-color: #3594cb;
+	border-width: 10px;
+	top: 20px;
+}
+
+.tweet_timeline > li:nth-child(odd) .tweet_body:after {
+	border-right-color: #6cbfee;
+}
+
+/* The icons */
+.tweet_timeline > li .tweet_user {
+	width: 60px;
+	height: 60px;
+	position: absolute;
+	background: #46a4da;
+	border-radius: 50%;
+	box-shadow: 0 0 0 2px #afdcf8;
+	left: 20%;
+	top: 0;
+	margin: 0 0 0 -40px;
+	background-image: attr(data-image-src url);
+	background-size:   cover;
+    background-repeat: no-repeat;
+}
+
+
+/* Example Media Queries */
+@media screen and (max-width: 65.375em) {
+
+	.tweet_timeline > li .tweet_time span:last-child {
+		font-size: 1.5em;
+	}
+}
+
+@media screen and (max-width: 47.2em) {
+	.tweet_timeline:before {
+		display: none;
+	}
+
+	.tweet_timeline > li .tweet_time {
+		width: 100%;
+		position: relative;
+		padding: 0 0 20px 0;
+	}
+
+	.tweet_timeline > li .tweet_time span {
+		text-align: left;
+	}
+
+	.tweet_timeline > li .tweet_body {
+		margin: 0 0 30px 0;
+		padding: 1em;
+		font-weight: 400;
+		font-size: 95%;
+	}
+
+	.tweet_timeline > li .tweet_body:after {
+		right: auto;
+		left: 20px;
+		border-right-color: transparent;
+		border-bottom-color: #3594cb;
+		top: -20px;
+	}
+
+	.tweet_timeline > li:nth-child(odd) .tweet_body:after {
+		border-right-color: transparent;
+		border-bottom-color: #6cbfee;
+	}
+
+	.tweet_timeline > li .tweet_user {
+		position: relative;
+		float: right;
+		left: auto;
+		margin: -55px 5px 0 0px;
+	}	
+}
+
