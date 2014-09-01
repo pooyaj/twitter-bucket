@@ -12,7 +12,7 @@ var TweetsCollection = Backbone.Collection.extend({
     if (options.query) this.query = options.query; else this.query = "";
   },
   url: function () {
-    return "/tweetproxy/proxy.php?q="+ this.query+"&count=5";
+    return "/tweetproxy/proxy.php?q="+ this.query+"&count=50";
   },
   parse: function(response) {
     return response.statuses;
@@ -22,7 +22,8 @@ var TweetsCollection = Backbone.Collection.extend({
 
 var tweetTemplate = _.template('<time class="tweet_time"><span><%= model.get("created_at").slice(0,10) %></span> <span><%= model.get("created_at").slice(10,16) %></span></time>'+
 '<div class="tweet_user" style="background-image: url(\'<%= model.get("user").profile_background_image_url %>\')"></div>'+
-'<div class="tweet_body"><p><%= processTweetBody(model.get("text")) %></p></div>');
+'<div class="tweet_body"><span><a href="https://twitter.com/<%= model.get("user").screen_name %>"><%= model.get("user").name %></a></span>'+
+'<span><%= model.get("user").screen_name %></span><hr><p><%= processTweetBody(model.get("text")) %></p></div>');
 
 var TweetView = Backbone.View.extend({
   tagName: 'li',
@@ -38,6 +39,7 @@ var TweetView = Backbone.View.extend({
     return this.$el;
   },
   processTweetBody: function(text){
+      console.log(this.model.get('entities').symbols);
       var transforms = new Array();
       if (this.model.get('entities').urls) this.model.get('entities').urls.forEach(function(item) {
         transforms[item.indices[0]] = {end: item.indices[1], replacement: "<a href='" + item.url + "'>" + item.display_url + "</a>"};
@@ -89,10 +91,10 @@ var TweetsList = Backbone.View.extend({
   },
   fetchResults: function() {
     this.collection.fetch({success: this.emptyEntry});
-    this.interval = setInterval(_.bind(function() {
-      console.log("updating");
-      this.collection.fetch({remove: false, success: this.emptyEntryToStage});
-    }, this), 30000);
+    this.interval = setInterval(_.bind(this.refreshResults, this), 3000000);
+  },
+  refreshResults: function() {
+    this.collection.fetch({remove: false, success: this.emptyEntryToStage});
   },
   updateSearch: function(query) {
     this.collection.query = query;
@@ -102,7 +104,8 @@ var TweetsList = Backbone.View.extend({
   events: {
     'click #searchButton': 'doSearch',
     'click #tweet-stage-status': 'showMore',
-    'keyup #searchBox': 'checkKey'
+    'keyup #searchBox': 'checkKey',
+    'click #refreshButton': 'refreshResults'
   },
   doSearch: function() {
     var query = $('#searchBox').val();
