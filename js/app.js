@@ -1,6 +1,13 @@
+(function() {
 // Model for an individual tweet
 var TweetModel = Backbone.Model.extend({
-  validate: function(attrs){
+  validate: function(attrs) {
+  },
+  getUserProfileImageURL: function() {
+    if (this.get("user").profile_image_url)
+      return this.get("user").profile_image_url.replace("normal", "bigger");
+    else
+      return "";
   }
 });
 
@@ -21,7 +28,7 @@ var TweetsCollection = Backbone.Collection.extend({
 
 
 var tweetTemplate = _.template('<time class="tweet_time"><span><%= model.get("created_at").slice(0,10) %></span> <span><%= model.get("created_at").slice(10,16) %></span></time>'+
-'<div class="tweet_user" style="background-image: url(\'<%= model.get("user").profile_background_image_url %>\')"></div>'+
+'<div class="tweet_user" style="background-image: url(\'<%= model.getUserProfileImageURL() %>\')"></div>'+
 '<div class="tweet_body"><span><a href="https://twitter.com/<%= model.get("user").screen_name %>"><%= model.get("user").name %></a></span>'+
 '<span><%= model.get("user").screen_name %></span><hr><p><%= processTweetBody(model.get("text")) %></p></div>');
 
@@ -119,7 +126,7 @@ var TweetsList = Backbone.View.extend({
     var stage_count = $('#tweet-stage li').size();
     if (stage_count > 0) {
       $('#tweet-stage-status').slideDown("slow");
-      $('#tweet-stage-status').html(stage_count + " new tweets");
+      $('#tweet-stage-status').html(stage_count == 1 ? stage_count + " new tweet !" : stage_count + " new tweets !");
     }
   },
   showMore: function() {
@@ -144,13 +151,27 @@ var AppRouter = Backbone.Router.extend({
       vent.trigger("search:query", query);
     },
     index: function()  {
-      if (!window.tweets) initializeSearch();
+      if (!window.tweets) index();
     }
   });
 
 vent.on("search:query", function(query) {
+  // set the passed query as the last query in localStorage
+  if ('localStorage' in window && window['localStorage'] !== null) {
+    localStorage.setItem("lastQuery", query);
+  }
   if (window.tweets) window.tweets.updateSearch(query); else initializeSearch(query);
 });
+
+function index() {
+  if ('localStorage' in window && window['localStorage'] !== null && localStorage.getItem("lastQuery")) {
+    var query = localStorage.getItem("lastQuery");
+    initializeSearch(query);
+    tweetRouter.navigate("#/search/"+query, {trigger: true});
+  } else {
+    initializeSearch();
+  }
+}
 
 function initializeSearch(query) {
   var tweetCollection = new TweetsCollection([], {query: query});
@@ -162,3 +183,4 @@ $(function(){
   window.tweetRouter = new AppRouter();
   Backbone.history.start();
 });
+})();
