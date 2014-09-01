@@ -8,30 +8,21 @@ var TweetModel = Backbone.Model.extend({
 // Model for list of tweets 
 var TweetsCollection = Backbone.Collection.extend({
   model: TweetModel,
-  comparator: function(model) {
-    return model.get('text');
-  },
   initialize: function(model, options) {
-    this.query = options.query;
+    if (options.query) this.query = options.query; else this.query = "";
   },
   url: function () {
     return "/tweetproxy/proxy.php?q="+ this.query+"&count=5";
   },
   parse: function(response) {
     return response.statuses;
-  },
-  update: function() {
-    console.log("updating...");
-    this.fetch({
-      remove: false
-    });
   }
 });
 
 
 var tweetTemplate = _.template('<time class="tweet_time"><span><%= model.get("created_at").slice(0,10) %></span> <span><%= model.get("created_at").slice(10,16) %></span></time>'+
 '<div class="tweet_user" style="background-image: url(\'<%= model.get("user").profile_background_image_url %>\')"></div>'+
-'<div class="tweet_body"><p><%= fixURL(model.get("text")) %></p></div>');
+'<div class="tweet_body"><p><%= processTweetBody(model.get("text")) %></p></div>');
 
 var TweetView = Backbone.View.extend({
   tagName: 'li',
@@ -46,49 +37,72 @@ var TweetView = Backbone.View.extend({
     this.$el.html( this.template( this ) );
     return this.$el;
   },
-  fixURL: function(text){
-      console.log(this.model.get('entities').urls);
-      var urlUpdater = function (item) {
-        text = text.replace(text.slice(item.indices[0], item.indices[1]), "<a href='" + item.url + "'>" + item.display_url + "</a>");
-      };
-      this.model.get('entities').urls.forEach(urlUpdater);
-      if (this.model.get('entities').media) this.model.get('entities').media.forEach(urlUpdater);
-      return text;
+  processTweetBody: function(text){
+      var transforms = new Array();
+      if (this.model.get('entities').urls) this.model.get('entities').urls.forEach(function(item) {
+        transforms[item.indices[0]] = {end: item.indices[1], replacement: "<a href='" + item.url + "'>" + item.display_url + "</a>"};
+      });
+      if (this.model.get('entities').media) this.model.get('entities').media.forEach(function(item) {
+        transforms[item.indices[0]] = {end: item.indices[1], replacement: "<a href='" + item.url + "'>" + item.display_url + "</a>"};
+      });
+      if (this.model.get('entities').user_mentions) this.model.get('entities').user_mentions.forEach(function (item) {
+        transforms[item.indices[0]] = {end: item.indices[1], replacement: "<a href='https://twitter.com/" + item.screen_name + "'>@" + item.screen_name + "</a>"};
+      });
+      if (this.model.get('entities').hashtags) this.model.get('entities').hashtags.forEach(function (item) {
+        transforms[item.indices[0]] = {end: item.indices[1], replacement: "<a href='#/search/" + item.text + "'>#" + item.text + "</a>"};
+      });
+
+      var processedText = "";
+      var current = 0;
+      while (current < text.length) {
+        if (transforms[current]) {
+          processedText = processedText + transforms[current].replacement;
+          current = transforms[current].end-1;
+        } else {
+          processedText = processedText + text[current];
+        }
+        current++;
+      }
+      return processedText;
     }
   });
 
 var TweetsList = Backbone.View.extend({
   el: $('.tweets'),
   initialize: function(options){
-    console.log("tweetlist:initialize");
-    this.collection = new TweetsCollection([], {query: options.query});
+    if (options.collection)
+      this.collection = options.collection;
+    else
+      this.collection = new TweetsCollection();
     this.listenTo( this.collection, 'add', this.renderTweet );
     this.listenTo( this.collection, 'reset', this.reset);
   },
   renderTweet: function(model){
-    console.log("tweetlist:renderTweet");
     model.view = new TweetView({ model: model });
-    //this.$('#tweet-list').prepend(model.view.render().hide().fadeIn('slow'));
     this.$('#tweet-entry').append(model.view.render());
   },
   reset: function() {
-    console.log("resting ...");
     this.$('#tweet-list').empty();
-  },
-  updateSearch: function(query) {
-    this.collection.query = query;
+    this.$('#tweet-entry').empty();
+    this.$('#tweet-stage').empty();
     clearInterval(this.interval);
-    this.collection.reset();
+  },
+  fetchResults: function() {
     this.collection.fetch({success: this.emptyEntry});
-    //this.interval = setInterval(_.bind(this.collection.update, this.collection), 1000000);
     this.interval = setInterval(_.bind(function() {
       console.log("updating");
       this.collection.fetch({remove: false, success: this.emptyEntryToStage});
-    }, this), 15000);
+    }, this), 30000);
+  },
+  updateSearch: function(query) {
+    this.collection.query = query;
+    this.collection.reset();
+    this.fetchResults();
   },
   events: {
     'click #searchButton': 'doSearch',
-    'click #tweet-stage-status': 'showMore'
+    'click #tweet-stage-status': 'showMore',
+    'keyup #searchBox': 'checkKey'
   },
   doSearch: function() {
     var query = $('#searchBox').val();
@@ -98,18 +112,20 @@ var TweetsList = Backbone.View.extend({
     $('#tweet-entry li').appendTo('#tweet-list');
   },
   emptyEntryToStage: function() {
-    console.log("finished updating");
     $('#tweet-entry li').prependTo('#tweet-stage');
     var stage_count = $('#tweet-stage li').size();
     if (stage_count > 0) {
-      $('#tweet-stage-status').show();
-      $('#tweet-stage-status').html(stage_count + " More tweets");
+      $('#tweet-stage-status').slideDown("slow");
+      $('#tweet-stage-status').html(stage_count + " new tweets");
     }
   },
   showMore: function() {
-    console.log("showmore");
-    $('#tweet-stage li').prependTo('#tweet-list');
+    var currentOffset = $('#tweet-list:first');
     $('#tweet-stage-status').hide();
+    $('#tweet-stage li').prependTo('#tweet-list').hide().slideDown("slow");
+  },
+  checkKey: function (e, b) {
+    if (e.which == 13) this.doSearch();
   }
 });
 
@@ -125,17 +141,18 @@ var AppRouter = Backbone.Router.extend({
       vent.trigger("search:query", query);
     },
     index: function()  {
-      if (!window.tweets) createCollections();
+      if (!window.tweets) initializeSearch();
     }
   });
 
 vent.on("search:query", function(query) {
-  if (window.tweets) window.tweets.updateSearch(query); else createCollections(query);
+  if (window.tweets) window.tweets.updateSearch(query); else initializeSearch(query);
 });
 
-function createCollections(query) {
+function initializeSearch(query) {
   var tweetCollection = new TweetsCollection([], {query: query});
   window.tweets = new TweetsList({collection: tweetCollection});
+  window.tweets.fetchResults();
 }
 
 $(function(){
