@@ -12,7 +12,12 @@
   <div class="container">
     <section class="tweets tweet_container">
       <h1>Twitter Search</h1>
-      Search: <input type="text" id="searchBox"><button type="button" id="searchButton">Search</button>
+      <div class="searchForm">
+        <input type="text" id="searchBox"><button type="button" id="searchButton">Search</button><br>        
+      </div>
+      <button id="tweet-stage-status" style="display:none"></button>
+      <ul style="display:none" id="tweet-entry"></ul>
+      <ul style="display:none" id="tweet-stage"></ul>
       <ul class="tweet_timeline" id="tweet-list"></ul>
     </section>
   </div>
