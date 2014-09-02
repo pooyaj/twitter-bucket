@@ -25,6 +25,7 @@ body, html { font-size: 100%; padding: 0; margin: 0;}
 
 
 body {
+	line-height: 1.4;
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
     text-rendering: optimizeLegibility;
    	font-weight: 300;
@@ -39,6 +40,15 @@ a {
 
 a:hover {
 	color: #f39c12;
+}
+
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
 }
 
 .tweet_container {
