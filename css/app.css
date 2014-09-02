@@ -33,6 +33,7 @@ a:hover {
 	max-width: 69em;
 	margin: 0 auto;
 	padding: 0 1.875em 3.125em;
+	position: relative;
 }
 
 
@@ -98,6 +99,7 @@ a:hover {
 	line-height: 1.4;
 	position: relative;
 	border-radius: 5px;
+	overflow: hidden;
 }
 
 
@@ -239,6 +241,32 @@ a:hover {
 .tweet_container .searchForm > button:last-of-type::before {
 	content: "\f021";
 }
+
+.tweet_bucket {
+	position: absolute;
+	display: block;
+	right:5%;
+	top:5px;
+	font: normal normal normal 14px/1 FontAwesome;
+	-webkit-font-smoothing: antialiased;
+  	-moz-osx-font-smoothing: grayscale;
+  	font-size: 3.5em;
+  	color:rgba(236, 240, 241,0.4);
+}
+
+.tweet_bucket::before {
+	content: "\f187";	
+}
+
+.tweet_bucket span {
+	display: inline-block;;
+	font-size: 0.35em;
+	margin-bottom: -40px;
+	margin-left: -34px;
+	text-align: center;
+	color:#16a085;
+}
+
 
 /* Example Media Queries */
 @media screen and (max-width: 65.375em) {

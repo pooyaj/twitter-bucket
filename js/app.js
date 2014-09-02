@@ -26,6 +26,12 @@ var TweetsCollection = Backbone.Collection.extend({
   }
 });
 
+var TweetsBucketCollection = Backbone.Collection.extend({
+  model: TweetModel,
+  initialize: function(model) {
+  }
+});
+
 
 var tweetTemplate = _.template('<time class="tweet_time"><span><%= model.get("created_at").slice(0,10) %></span> <span><%= model.get("created_at").slice(10,16) %></span></time>'+
 '<div class="tweet_user" style="background-image: url(\'<%= model.getUserProfileImageURL() %>\')"></div>'+
@@ -43,6 +49,9 @@ var TweetView = Backbone.View.extend({
   },
   render: function(){
     this.$el.html( this.template( this ) );
+    this.$el.click(_.bind(function() {
+      window.tweetBucket.add(this.model);
+    }, this));
     return this.$el;
   },
   processTweetBody: function(text){
@@ -76,6 +85,17 @@ var TweetView = Backbone.View.extend({
     }
   });
 
+var BucketView = Backbone.View.extend({
+  el: $('.tweet_bucket'),
+  initialize: function(options){
+    this.collection = options.collection;
+    this.listenTo( this.collection, 'add', this.renderBucket );
+  },
+  renderBucket: function() {
+    this.$('span').html(this.collection.length);
+  }
+});
+
 var TweetsList = Backbone.View.extend({
   el: $('.tweets'),
   initialize: function(options){
@@ -89,6 +109,12 @@ var TweetsList = Backbone.View.extend({
   renderTweet: function(model){
     model.view = new TweetView({ model: model });
     this.$('#tweet-entry').append(model.view.render());
+  },
+  renderAll: function() {
+    _.each(this.collection.models, function(item) {
+      this.renderTweet(item);
+    }, this);
+    this.emptyEntry();
   },
   reset: function() {
     this.$('#tweet-list').empty();
@@ -104,6 +130,7 @@ var TweetsList = Backbone.View.extend({
     this.collection.fetch({remove: false, success: this.emptyEntryToStage});
   },
   updateSearch: function(query) {
+    $("#searchBox").val(query);
     this.collection.query = query;
     this.collection.reset();
     this.fetchResults();
@@ -145,13 +172,17 @@ var vent = _.extend({}, Backbone.Events);
 var AppRouter = Backbone.Router.extend({
     routes: {
       'search/:query' : 'search',
+      'bucket' : 'bucket',
       '': 'index'
     },
     search: function(query) {
       vent.trigger("search:query", query);
     },
+    bucket: function() {
+      bucket();
+    },
     index: function()  {
-      if (!window.tweets) index();
+      index();
     }
   });
 
@@ -160,27 +191,35 @@ vent.on("search:query", function(query) {
   if ('localStorage' in window && window['localStorage'] !== null) {
     localStorage.setItem("lastQuery", query);
   }
-  if (window.tweets) window.tweets.updateSearch(query); else initializeSearch(query);
+  if (window.tweets && window.tweets.collection && window.tweets.collection.url) {
+    window.tweets.updateSearch(query);
+  } else {
+    window.tweets.collection = window.tweetCollection;
+    window.tweets.updateSearch(query);
+  }
 });
 
 function index() {
   if ('localStorage' in window && window['localStorage'] !== null && localStorage.getItem("lastQuery")) {
-    var query = localStorage.getItem("lastQuery");
-    initializeSearch(query);
+    var query = localStorage.getItem("lastQuery");  
+    console.log("retrieving last query:" + query);
     tweetRouter.navigate("#/search/"+query, {trigger: true});
-  } else {
-    initializeSearch();
+    window.tweets.updateSearch(query);
   }
 }
 
-function initializeSearch(query) {
-  var tweetCollection = new TweetsCollection([], {query: query});
-  window.tweets = new TweetsList({collection: tweetCollection});
-  window.tweets.fetchResults();
+function bucket() {
+  window.tweets.reset();
+  window.tweets.collection = window.tweetBucket;
+  window.tweets.renderAll();
 }
 
 $(function(){
   window.tweetRouter = new AppRouter();
+  window.tweetBucket = new TweetsBucketCollection();
+  window.tweetCollection = new TweetsCollection([], {query: ""});
+  window.tweets = new TweetsList({collection: window.tweetCollection});
+  window.bucketView = new BucketView({collection: window.tweetBucket});
   Backbone.history.start();
 });
 })();
