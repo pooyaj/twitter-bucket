@@ -1,7 +1,6 @@
 *, *:after, *:before { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
 body, html { font-size: 100%; padding: 0; margin: 0;}
 
-
 @font-face {
   font-family: 'FontAwesome';
   src: url('../fonts/fontawesome-webfont.eot?v=4.2.0');
@@ -10,10 +9,24 @@ body, html { font-size: 100%; padding: 0; margin: 0;}
   font-style: normal;
 }
 
+/* directly from Font-Awsome css */
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.fa-archive:before {
+  content: "\f187";
+}
+
 
 body {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
-    text-rendering: optimizeLegibility
+    text-rendering: optimizeLegibility;
    	font-weight: 300;
     color: #222;
     background-color: #1abc9c;
@@ -35,7 +48,6 @@ a:hover {
 	padding: 0 1.875em 3.125em;
 	position: relative;
 }
-
 
 .tweet_timeline {
 	margin: 30px 0 0 0;
@@ -99,9 +111,7 @@ a:hover {
 	line-height: 1.4;
 	position: relative;
 	border-radius: 5px;
-	overflow: hidden;
 }
-
 
 .tweet_timeline > li:nth-child(odd) .tweet_body {
 	background: #ecf0f1;
@@ -109,12 +119,13 @@ a:hover {
 
 .tweet_timeline > li .tweet_body > span:first-of-type {
 	font-size: 0.8em;
-	margin-right: 10px;
+	font-weight: 700;
+	margin-right: 5px;
 }
 
 .tweet_timeline > li .tweet_body > span:last-of-type {
-	font-size: 0.7em;
-	color: #000;
+	font-size: 0.8em;
+	color: #999;
 }
 
 .tweet_timeline > li .tweet_body > span:last-of-type::before {
@@ -123,10 +134,8 @@ a:hover {
 
 
 
-.tweet_timeline > li .tweet_body h2 { 
-	margin-top: 0px;
-	padding: 0 0 10px 0;
-	border-bottom: 1px solid rgba(255,255,255,0.4);
+.tweet_timeline > li .tweet_body p { 
+	overflow: hidden;
 }
 
 /* The triangle */
@@ -162,6 +171,12 @@ a:hover {
 	background-size:   cover;
     background-repeat: no-repeat;
 }
+
+/* App description paragraph */
+.tweets > p {
+	color: #16a085;
+}
+
 /* More Tweets Button */
 .tweets > button {
 	width: 75%;
@@ -271,7 +286,7 @@ a:hover {
 	position: absolute;
 	display: block;
 	right:5%;
-	top:15%;
+	top:25px;
 	font: normal normal normal 14px/1 FontAwesome;
 	-webkit-font-smoothing: antialiased;
   	-moz-osx-font-smoothing: grayscale;
@@ -332,5 +347,26 @@ a:hover {
 		left: auto;
 		margin: -80px 5px 0 0px;
 	}	
+
+	.tweets .searchForm > input {
+		width: 70%;
+	}
+
+	.tweets .searchForm > button {
+		width: 15%;
+	}
+
+	.tweets .searchForm > button:first-of-type {
+		right: 1%;
+	}
+
+	.tweets .searchForm > button:last-of-type {
+		right: 15%;
+	}
+
+	.tweet_bucket_icon {
+		top: 80px;
+	}
+
 }
 
