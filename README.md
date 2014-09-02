@@ -2,7 +2,7 @@ Twitter Bucket
 ==============
 Twitter Bucket is an easy way to find interesting tweets and put them in a bucket beside each other. It is an alternative to starring tweets using the twitter interface, with the advantage of being local and private. 
 
-Demo: []
+Demo: [http://pooya.jaferian.com/bucket]
 
 I used the following Javascript frameworks in development: 
 - Backbone.js
