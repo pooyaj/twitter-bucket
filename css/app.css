@@ -163,7 +163,7 @@ a:hover {
     background-repeat: no-repeat;
 }
 /* More Tweets Button */
-.tweet_container > button {
+.tweets > button {
 	width: 75%;
 	margin: 15px 0 15px 25%;
 	background: #16a085;
@@ -179,7 +179,7 @@ a:hover {
 }
 
 /* Search Form Look and Feel */
-.tweet_container .searchForm {
+.tweets .searchForm {
 	position: relative;
 	display: block;
 	width: 100%;
@@ -187,7 +187,7 @@ a:hover {
 	border-radius: 8px;
 }
 
-.tweet_container .searchForm > input {
+.tweets .searchForm > input {
 	line-height: 2;
 	font-size: 1.4em;
 	padding: 5px 10px;
@@ -200,12 +200,12 @@ a:hover {
 	border-bottom: solid 5px #16a085;
 }
 
-.tweet_container .searchForm > input:focus {
+.tweets .searchForm > input:focus {
 	outline: none;
 	border-bottom: solid 5px #f1c40f;
 }
 
-.tweet_container .searchForm > button {
+.tweets .searchForm > button {
 	position: absolute;
 	font: normal normal normal 14px/1 FontAwesome;
 	 -webkit-font-smoothing: antialiased;
@@ -226,19 +226,19 @@ a:hover {
 	outline: none;
 }
 
-.tweet_container .searchForm > button:first-of-type {
+.tweets .searchForm > button:first-of-type {
 	right: 1%;
 }
 
-.tweet_container .searchForm > button:last-of-type {
+.tweets .searchForm > button:last-of-type {
 	right: 6%;
 }
 
-.tweet_container .searchForm > button:first-of-type::before {
+.tweets .searchForm > button:first-of-type::before {
 	content: "\f002";
 }
 
-.tweet_container .searchForm > button:last-of-type::before {
+.tweets .searchForm > button:last-of-type::before {
 	content: "\f021";
 }
 
@@ -267,6 +267,22 @@ a:hover {
 	color:#16a085;
 }
 
+.tweet_bucket_icon {
+	position: absolute;
+	display: block;
+	right:5%;
+	top:15%;
+	font: normal normal normal 14px/1 FontAwesome;
+	-webkit-font-smoothing: antialiased;
+  	-moz-osx-font-smoothing: grayscale;
+  	font-size: 1.5em;
+  	color:#16a085;
+	cursor: pointer;
+}
+
+.tweet_bucket_icon::before {
+	content: "\f187";	
+}
 
 /* Example Media Queries */
 @media screen and (max-width: 65.375em) {

@@ -19,7 +19,7 @@ var TweetsCollection = Backbone.Collection.extend({
     if (options.query) this.query = options.query; else this.query = "";
   },
   url: function () {
-    return "/tweetproxy/proxy.php?q="+ this.query+"&count=50";
+    return "http://jaferian.com/tweetproxy/proxy.php?q="+ this.query+"&count=50&callback=?";
   },
   parse: function(response) {
     return response.statuses;
@@ -36,7 +36,7 @@ var TweetsBucketCollection = Backbone.Collection.extend({
 var tweetTemplate = _.template('<time class="tweet_time"><span><%= model.get("created_at").slice(0,10) %></span> <span><%= model.get("created_at").slice(10,16) %></span></time>'+
 '<div class="tweet_user" style="background-image: url(\'<%= model.getUserProfileImageURL() %>\')"></div>'+
 '<div class="tweet_body"><span><a href="https://twitter.com/<%= model.get("user").screen_name %>"><%= model.get("user").name %></a></span>'+
-'<span><%= model.get("user").screen_name %></span><hr><p><%= processTweetBody(model.get("text")) %></p></div>');
+'<span><%= model.get("user").screen_name %></span><hr><p><%= processTweetBody(model.get("text")) %></p></div><div class="tweet_bucket_icon"</div>');
 
 var TweetView = Backbone.View.extend({
   tagName: 'li',
@@ -49,10 +49,19 @@ var TweetView = Backbone.View.extend({
   },
   render: function(){
     this.$el.html( this.template( this ) );
+/*
     this.$el.click(_.bind(function() {
       window.tweetBucket.add(this.model);
     }, this));
+*/
     return this.$el;
+  },
+  events: {
+    'click .tweet_bucket_icon': 'addToBucket'
+  },
+  addToBucket: function() {
+    console.log("add to bucket");
+    window.tweetBucket.add(this.model);
   },
   processTweetBody: function(text){
       console.log(this.model.get('entities').symbols);
